@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tier Lister</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Inter, sans-serif;
+    }
+
+    body {
+      background: #0f1117;
+      color: white;
+      min-height: 100vh;
+      padding: 32px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 28px;
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+
+    .tierlist {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .tier {
+      display: flex;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #181b24;
+      border: 1px solid rgba(255,255,255,0.06);
+      min-height: 110px;
+    }
+
+    .label {
+      width: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #111;
+    }
+
+    .items {
+      flex: 1;
+      display: flex;
+      gap: 12px;
+      padding: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .card {
+      width: 90px;
+      height: 90px;
+      border-radius: 16px;
+      background: #252a38;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: grab;
+      transition: 0.2s ease;
+      border: 1px solid rgba(255,255,255,0.08);
+      user-select: none;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-3px) scale(1.03);
+      background: #2d3344;
+    }
+
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .add-image {
+      border: 2px dashed rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .add-image:hover {
+      border-color: #7c9cff;
+      color: white;
+      background: rgba(124,156,255,0.08);
+    }
+
+    .s { background: #ff5c7a; }
+    .a { background: #ff9f43; }
+    .b { background: #ffd166; }
+    .c { background: #7bd389; }
+    .d { background: #6ecbff; }
+
+    .pool {
+      margin-top: 32px;
+      padding: 20px;
+      border-radius: 18px;
+      background: #181b24;
+      border: 1px solid rgba(255,255,255,0.06);
+      max-width: 1200px;
+      margin-inline: auto;
+    }
+
+    .pool h2 {
+      margin-bottom: 16px;
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .pool-items {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .dragging {
+      opacity: 0.4;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Tier Lister</h1>
+
+  <div class="tierlist">
+
+    <div class="tier">
+      <div class="label s">S</div>
+      <div class="items"></div>
+    </div>
+
+    <div class="tier">
+      <div class="label a">A</div>
+      <div class="items"></div>
+    </div>
+
+    <div class="tier">
+      <div class="label b">B</div>
+      <div class="items"></div>
+    </div>
+
+    <div class="tier">
+      <div class="label c">C</div>
+      <div class="items"></div>
+    </div>
+
+    <div class="tier">
+      <div class="label d">D</div>
+      <div class="items"></div>
+    </div>
+
+  </div>
+
+  <div class="pool">
+    <h2>Images</h2>
+
+    <div class="pool-items items" id="pool">
+
+      <label class="card add-image">
+        + Add Image
+        <input type="file" id="upload" accept="image/*" multiple>
+      </label>
+    </div>
+  </div>
+
+  <script>
+    const containers = document.querySelectorAll(".items");
+    let dragged = null;
+
+    function makeDraggable(card) {
+      card.addEventListener("dragstart", () => {
+        dragged = card;
+        card.classList.add("dragging");
+      });
+
+      card.addEventListener("dragend", () => {
+        card.classList.remove("dragging");
+      });
+    }
+
+    document.querySelectorAll(".card").forEach(makeDraggable);
+
+    containers.forEach(container => {
+      container.addEventListener("dragover", e => {
+        e.preventDefault();
+      });
+
+      container.addEventListener("drop", () => {
+        if (dragged) {
+          container.appendChild(dragged);
+        }
+      });
+    });
+
+    const upload = document.getElementById("upload");
+    const pool = document.getElementById("pool");
+
+    upload.addEventListener("change", e => {
+      const files = [...e.target.files];
+
+      files.forEach(file => {
+        const reader = new FileReader();
+
+        reader.onload = event => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.draggable = true;
+
+          const img = document.createElement("img");
+          img.src = event.target.result;
+
+          card.appendChild(img);
+
+          pool.insertBefore(card, pool.lastElementChild);
+
+          makeDraggable(card);
+        };
+
+        reader.readAsDataURL(file);
+      });
+    });
+  </script>
+
+</body>
+</html>
