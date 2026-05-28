@@ -31,4 +31,4 @@ Uploaded images automatically become draggable tier cards.
 
 # 📄 License
 
-Free to use and modify.
+Do whatever you want.
